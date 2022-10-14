@@ -1,0 +1,198 @@
+So there is some rules which you need to keep in mind like --> 
+1.) The django authentication process uses Users default table , so you need to refer to that table for users credentials. After switching to postgres the users table also got shifted to postgres , in django.cotrib.(auth.models) <-- This is main
+2.)You can create the models same as you are creating in the default database , so i think there is not much change when switching to other database
+
+-----------------> Middleware code <--------------------
+
+class CustomMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+
+	print("custom middleware before next middleware/view")
+        # Code to be executed for each request before
+        # the view (and later middleware) are called.
+
+        
+        response = self.get_response(request)
+
+	# Code to be executed for each response after the view is called
+        print("custom middleware after response or previous middleware")
+        
+        return response
+
+------------------> code ends <--------------------------
+
+NOTE :- remember one thing that the order of writing authentication steps over a funtion matters
+@api_view(["GET"])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated]) 
+This will work , but if you will write any of the authentication related stuff before api view then it is not going to work
+
+Now Today i am going to do stuff which seems to be confusing or complex for me(As i will try these for the first time on my own) :-
+1.) Try to create some Foreign Key based api and perform CRUD operations on them. Also try to update your api to add only unique values.
+2.) Try to use static files and link javscript and css codes to your html files.
+
+TRY THESE FIRST AFTER THAT NEXT WORK WILL BE DECIDED ... 
+
+NOTES ---------------->
+Now let's say i am having models like Player and Family so as we can think by name that every Player is going to have a Family and vice-versa. So here One-to-one relationship is taking place so , we need to create a one-to-one relationship between player and family.
+
+# Now here are the key points to takeaway if you are writing OneToOne relationship then only a single family can be linked to a single PLayer and vice-versa.
+
+# If we are writing ForeignKey then this means that we are creating (((  ManyToOne  ))) relationship , which means that a Player can have multiple families but a family can only have a Player. ---> So here i found a trick which you can use to remember which model is going to be many and which is going to be one , The relation is referring to current Model Like ManyToOne i.e think it like there are many families and they are pointing to one Player .
+          
+    #                Family1
+    #              -
+    #            -
+    #   Player - - Family2
+    #            -
+    #              - 
+    #                Family3
+
+# And atlast if we want to create ManyToMany relationship then we can use models.ManyToMany , which will simply create many-many relationship example can be like customer and product , a customer can have multiple products while a product can have multiply customers.
+
+
+IMPORTANT :- To get the data from the response we need to decode it and then get the data like if i am getting response response then -->
+data = ast.literal_eval(response.content.decode("utf-8"))
+
+NOW , to make a combination of data to be unique we simply need to add this into our particular model -->
+class Meta:
+    unique_together = [here we will write name of the field whose combination should be unique]
+Or if we need to make a particular field to be unique then we can add unique = True , when writing the field.
+Name = models.CharField(max_length = 100 , unique = True)
+
+----------->Project discussion <------------------------------------
+
+
+So basically what i am experiencing is that , we are overrinding a lot the inbuilt methods when we are using class based components in this project. So , it's hard in the initial stage to know about the inbuilt function and manmade function. So try to explore the functions which are getting built or which are already built and getting overridden.
+
+Here I will write the methods which i am noticing and also which are already built and simply getting overridden :-
+
+Serializer Class is used to validate data and also to convert the data into suitable form  , but let's say there is a case where we want additional checking or validation inside our serializer class then we need to do the follwing steps (Notice the steps are different in function and class based view) :-
+
+Let's take an example :-
+Let's say we want to send emails to users but we don't want to send emails to a list of users.
+So for that we need to add some extra validation to our serializer
+
+----------> start1 <-----------------------------------
+
+class DemoSerializer(serializers.Serializer):
+    class Meta:
+        ...
+    def validate_email(self , email):
+        # here you are going to check the self.context field , as we are going to send the data required into the context variable which accepts dictionary.
+
+        # Now let's say in this example we are sending a list of emails in context which should be Excluded
+
+        exclude_email_list = self.context.get("email_list",[])
+        if(email in exclude_email_list):
+            raise some error
+
+        return email
+
+ACCESSING PART
+
+FUNCTION BASED view
+def send_email_view(request):
+    # .....
+    context = {"exclude_email_list": ['test@test.com', 'test1@test.com']}
+    serializer = DemoSerializer(data=request.data, context=context)
+    # ....
+
+CLASS BASED view
+class SendEmailViewSet(viewsets.GenericViewSet):
+    # ......
+    def get_serializer_context(self):
+        context = super(SendEmailViewSet, self).get_serializer_context()
+        context.update({
+            "exclude_email_list": ['test@test.com', 'test1@test.com']
+            # extra data
+        })
+        return context
+    # .......
+
+-----------> Ends1 <--------------------------------------------------
+
+-----------> Start2 <------------------------------------------------
+
+Also there can be cases when we need to use different serializers for different cases , in this cases we can simply override a inbuilt function -->
+
+def get_serializer_class(self):
+    # Here we can write conditions according to which we can return different serializer according to different conditions.
+    if(self.user.is_staff):
+        pass;
+    if(self.action == "create"):
+        pass;
+    OR whatever is your requirement.
+    pass;
+
+In this previous function we are simply specifying that for which work we need which serializer. So that we are not required to create a whole new viewset just to change the serializer.
+
+-------------->Ends2 <----------------------------------------------
+
+------------>start3 <-----------------------------------------------
+
+Concept of PAGINATION :-
+let's say we are having 1000 data and we want some page system like we want to display only 10 data on one page and on clickin on next button next 10 data will get loaded and so on. So how we are going to create it. We will simply take the help of pagination 
+Firstly we will understand the basic pagination :-
+
+from django.core.paginator import Paginator
+
+objects = ["1" , "2" , "3" , "4" , "5"]
+p = Paginator(objects , size);
+here size means the size of the pages we need to create like we need 10 data on one page then size = 10;
+
+if here size = 2;
+then the data would be ["1" , "2"] , ["3" , "4"] , ["5"] , these are the 3 pages which are going to be created.
+
+In project we are importing pagination from rest_framework
+class GeneralPagination(pagination.PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
+
+----------->Ends3 <------------------------------------------------
+
+---------->Start4 <-------------------------------------------------
+
+Now there are some methods which are most commonly getting overriden in Class Based View like :-
+
+Firstly understand this , let's say in queryset we are having data and we don't need that instead we need something out from it,  so what we can do is we need to take all this data and write some condition and to get all the data , one most common syntax is used -->
+data = super(viewname , self).place_where_data_is_stored. Like :-
+get_queryset() provides all the data in the model , if we need some then :-
+data = super(viewname , self).get_queryset();
+
+
+def get():
+    # This method is the simple get method which is used to sever get request similarly , there are other methods also post() , patch() etc.
+    pass;
+
+def get_queryset():
+    this method is used instead of queryset variable as this method is preferable to use , instead of queryset.
+    here we can specify the objects of our model or tables of our particular model we need to pass to the view.
+    pass;
+
+def get_context_data():
+    this is same as get_query_set instead this is used to send data to the templates.
+    pass;
+
+def get_object():
+    this method simply refers to the instance of the current view.
+    pass;
+
+
+Also there is one more thing called as "filterset_fields" , which can be specified in the view , which will simply allow us to use those fields into the url , like if i am writing like :-
+filterset_fields = ["Name" , "id"] , then in this becomes a valid url -->
+http://anything/api/v1/AccessGranted?Name="Tanay"&id=1
+So this will work as like access will be granted if Name is Tanay and the id is 1 , then this url will go to AccessGranted page.
+
+-----------> Ends4 <-----------------------------------------------
+
+Now i am thinking about creating a simple todo app , which is going to use all the new methods and techniques i learnt in new project.
+
+NOW WHERE I AM LEAVING IS  , I AM STUCKED AT A POINT WHERE I NEED TO CREATE A USER USING API AND AFTER THAT USING THOSE CREDENTIALS I NEED TO GENRATE A TOKEN , AFTER THAT I NEED TO ADD THAT TOKEN TO THE TOKENS MODEL AND LINK THAT ROW TO THE PARTICULAR USER WE CREATED SO THAT USING USER WE CAN ACCESS THE TOKEN.
+
+SO PROBLEM WHICH I AM FACING IS THAT I AM TRYING TO CREATE A API WHICH WILL TAKE USENAME AND PASSWORD AS POST REQUEST AND AFTER THAT I WILL CALL AUTH-GETTOKEN API WHICH WILL GIVE ME THE TOKEN GENERATED AND THEN MY MAIN API WILL ADD THIS TOKEN TO THE CORRESSPONDING USER , AND ATLAST I WILL RETURN THE RESPONSE , BUT I AM NOT ABLE TO SEND USERNMA AND PASSWORD WHEN TRYING TO SEND IN THE SERIALIZER_CLASS TOKENSERIALIZER.
+

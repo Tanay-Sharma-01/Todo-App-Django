@@ -1,0 +1,31 @@
+.Add-Todo-Page{
+    width: 100vw; 
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.todo-row{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.Add-Todo-Form{
+    width: 400px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column  ;
+}
+
+.Add-Todo-Form input{
+    width: 200px;
+}
+
+.Add-Todo-Form .todo-second{
+    margin: auto;
+}
+

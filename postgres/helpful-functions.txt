@@ -1,0 +1,120 @@
+def get_token_and_data(username , password):
+
+    response = requests.post("http://localhost:8000/auth-gettoken/" , data={
+        "username" : username,
+        "password" : password
+    })
+    data = ast.literal_eval(response.content.decode("utf-8"))
+    print(color.YELLOW , data)
+    
+    DATA.TOKEN = data["token"];
+   
+    # print(TOKEN)
+
+    # response = requests.get("http://localhost:8000/api/player/" , headers={
+    #     "Authorization":"TOKEN 8abf708ad27af5bb17292575abb663be65949e09"
+    # })
+
+    # data = ast.literal_eval(response.content.decode("utf-8"))
+    # print(data)
+
+    pass
+
+# demo = requests.post("http://localhost:8000/api/v1/create-token/" , data={
+        #     "username" : "admin",
+        #     "password": "admin"
+        # })
+        # demo = ast.literal_eval(demo.content.decode("utf-8"))
+        # print(color.RED , demo)
+
+        # print(color.YELLOW , data)
+
+    
+# try:
+    #     already_exists = User.objects.get(username = username)
+    #     # print(color.RED , already_exists)
+    # except:
+    #     # print(color.GREEN , "user not found")
+    #     new_user = User.objects.create(username = username , password = make_password(password));
+    #     new_user.save();
+
+    #     account = User.objects.get(username = username);
+    #     get_token_and_data(username , password)
+        # LOGIN(request , account)
+
+    #     return HttpResponseRedirect("/")
+    # else:
+    #     # print(color.RED , "user already found")
+    #     return HttpResponseRedirect("/invalid-details/0/")
+
+
+# class CreateTokenViewSet(viewsets.ModelViewSet):
+    
+#     # front end developer(FED) is going to call this api , now he is having username and password , now how can i create a new table in TOKENS model so that i can link the newly created table to the user which is sent by the FED.
+    
+#     # here what i need to do is , i need to check if the current user is already having a token then no-work simply return the token otherwise create a token to the particular user and add that token in the TOKENS model.
+
+#     queryset = User.objects.all()
+#     serializer_class = TokenSerializer
+#     http_method_names = ["post"]
+
+#     def create(self , request):
+#         data = request.data.dict()
+#         # try:
+#         #     user = User.objects.get(usename = data["username"])
+#         # except:
+#         user = User.objects.create(data)
+
+#         response = requests.post("http://localhost:8000/auth-gettoken/" , data=data)
+#         data = ast.literal_eval(response.content.decode("utf-8"))
+#         # print(color.YELLOW , data)
+#         DATA.TOKEN = data["token"];
+
+#         # new_token = user.token_set.create(token = DATA.TOKEN);
+#         # new_token.save();
+#         # user.save();
+
+#         data = {
+#             "token" : DATA.TOKEN,
+#             "user": self.request.user.pk
+#         }
+
+#         serialized = TokenSerializer(data)
+#         if(serialized.is_valid()):
+#             serialized.save()
+        
+
+#         return Response(serialized.data);
+#         # else:
+
+
+
+
+-----------------_> <----------------------------------------
+<div class="icons" style="position: absolute; right: 0; bottom: 100%">
+        <!-- <span
+          class="edit"
+          style="
+            background-color: rgb(0, 0, 0);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            padding: 5px;
+            color: white;
+          "
+        > -->
+          <i class="fa-solid fa-pen-to-square" ></i
+        >
+    <!-- </span> -->
+        <span
+          class="delete"
+          style="
+            background-color: rgb(0, 0, 0);
+            border-radius: 50%;
+            width: 10px;
+            height: 10px;
+            padding: 5px;
+            color: white;
+          "
+        ></span>
+      </div>

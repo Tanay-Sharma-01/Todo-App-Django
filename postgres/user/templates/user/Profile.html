@@ -1,0 +1,27 @@
+{% extends 'user/Navbar.html' %}
+{% block profile %}
+    <div class="Profile">
+        <div class="show_user">
+            {{user}}
+        </div>  
+    </div>
+    <!-- <div class="change_user">
+        <button id="change">Change username or password</button>
+        <div class="username-password-form">
+            <form>
+                <input type="text" name="username" placeholder="username" /></br>
+                <input type="text" name="password" placeholder="password" />
+            </form>
+        </div>
+    </div> -->
+    <!-- <form action="/authenticate_login_request/" method="POST">
+        {% csrf_token %}
+        
+        <input type="text" required="true" name="username"  placeholder="username" /></br></br>
+        <input type="text" required="true" name="password"  placeholder="password" /></br></br>  
+        <button onsubmit="">Login</button>
+    </form></br>
+    <span>or create a account?<a href="/signup/"> signup </a></span> -->
+
+    
+{% endblock %}

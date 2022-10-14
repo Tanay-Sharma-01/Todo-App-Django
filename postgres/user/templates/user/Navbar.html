@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel = "stylesheet" type = "text/css" href="{% static 'user/Navbar.css' %}" />
+    
+        <!-- Font Awesome -->
+        <script src="https://kit.fontawesome.com/4764f4dcde.js" crossorigin="anonymous"></script>
+    
+</head>
+<body>
+    <div class="Nav">
+        <a id="Logo" style="text-decoration: none; color: white"  href="/" >TRACKER</a>
+        <div>
+            {% block signup-login %}
+            {% endblock %}
+            {% block logout %}
+            {% endblock %}
+        </div>
+    </div>
+    <div class="Main-Body">
+        {% block profile %}
+        {% endblock %}
+        {% block todo-display %}
+        {% endblock %}
+    </div>
+    <script type="application/javascript" src="{% static '/user/home.js' %}"></script>
+</body>
+</html>

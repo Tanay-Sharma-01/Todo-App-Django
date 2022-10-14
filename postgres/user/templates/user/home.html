@@ -1,0 +1,42 @@
+{% extends 'user/Navbar.html' %} {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+  </head>
+  <body>
+    {% block signup-login %} {% if not isAuth %}
+    <div id="signup-login" class="Nav-items">
+      <a href="/signup/">Signup</a>
+      <a href="/login/">Login</a>
+    </div>
+    {% endif %} {% endblock %} {% block logout %} {% if isAuth %}
+    <div id="Logout" class="Nav-items">
+      <a href="/profile/">{{user}}</a>
+      <a href="/auth/logout/?next=/">Logout</a>
+    </div>
+    {% endif %} {% endblock %} {% block todo-display %} {% for x in data %}
+    <div class="display-card" style="position: relative">
+      <div class="icons">
+        {% with pk=x.pk %}
+        <button name="{{pk}}" onclick="update_todo()" class="fa-solid fa-pen-to-square"></button>
+        <a href="http://localhost:8000/api/v1/delete-todo/{{pk}}/" name="{{pk}}" class="fa-solid fa-trash"></a>
+        {% endwith %}
+    </div>
+      <div class="Title">{{ x.title }}</div>
+      <div class="Description">{{ x.description }}</div>
+      <div class="Date">
+        <span class="start-date"> {{ x.start_date }} </span>
+        <span class="end-date"> {{ x.end_date }} </span>
+      </div>
+    </div>
+    {% endfor %} {% if isAuth %}
+    <div class="Add-Todo-Button">
+      <a href="/add-todo/">Add Todo</a>
+    </div>
+    {% endif %} {% endblock %}
+  </body>
+</html>
