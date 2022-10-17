@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'user/add-todo.css' %}" />
+</head>
+<body>
+    <div class="Add-Todo-Page">
+        <h3>Update Todo</h3>
+        <form action="/api/v1/update-todo/" method="post" class="Add-Todo-Form">
+            {% csrf_token %}
+            <div class="todo-first">
+                <div class="todo-row">
+                    <label>Title :</label>
+                    <input type="text" required="true" placeholder="title" name="title" value="{{title}}" />
+                </div>
+                <div class="todo-row">
+                    <label> Description : </label>
+                    <input type="text" required="true" placeholder="description" name="description" value="{{description}}" />
+                </div>
+                <div class="todo-row">
+                    <label> Start-Date : </label>
+                    <input type="date" required="true" placeholder="start_date" name="start_date" value="{{start_date}}" />
+                </div>
+                <div class="todo-row">
+                    <label> End-Date : </label>
+                    <input type="date" placeholder="end-date" id="end_date" required="true" name="end_date" value="{{end_date}}"  />
+                </div>
+            </div>
+            <input name="pk" style="display: none;" value="{{pk}}" />
+            </br>
+            <div class="todo-second">
+                <input type="submit" value="save" />
+            </div>
+            
+        </form>
+    </div>
+</body>
+</html>

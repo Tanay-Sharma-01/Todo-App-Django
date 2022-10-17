@@ -13,5 +13,6 @@ urlpatterns = [
     path("create_user/" , create_user , name="create_user"),
     path("auth-gettoken/" , views.obtain_auth_token , name="get-token"),
     path("add-todo/" , add_Todo , name="add-todo"),
-    path("todo-auth/" , todo_auth , name="todo-auth")
+    path("todo-auth/" , todo_auth , name="todo-auth"),
+    path("update-todo/<int:pk>/" , updateTodo , name="updateTodo")
 ]

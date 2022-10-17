@@ -19,20 +19,21 @@
       <a href="/auth/logout/?next=/">Logout</a>
     </div>
     {% endif %} {% endblock %} {% block todo-display %} {% for x in data %}
+    {% with pk=x.pk %}
     <div class="display-card" style="position: relative">
       <div class="icons">
-        {% with pk=x.pk %}
-        <button name="{{pk}}" onclick="update_todo()" class="fa-solid fa-pen-to-square"></button>
+        <a href="update-todo/{{pk}}" name="{{pk}}"  class="fa-solid fa-pen-to-square"></a>
         <a href="http://localhost:8000/api/v1/delete-todo/{{pk}}/" name="{{pk}}" class="fa-solid fa-trash"></a>
-        {% endwith %}
-    </div>
-      <div class="Title">{{ x.title }}</div>
-      <div class="Description">{{ x.description }}</div>
-      <div class="Date">
-        <span class="start-date"> {{ x.start_date }} </span>
-        <span class="end-date"> {{ x.end_date }} </span>
       </div>
+      <div id="title">{{ x.title }}</div>
+      <div  id="description">{{ x.description }}</div>
+      <div class="Date">
+        <span id="start_date"> {{ x.start_date }} </span>
+        <span id="end_date"> {{ x.end_date }} </span>
+      </div>
+      <button id="save">Save</button>
     </div>
+    {% endwith %}
     {% endfor %} {% if isAuth %}
     <div class="Add-Todo-Button">
       <a href="/add-todo/">Add Todo</a>

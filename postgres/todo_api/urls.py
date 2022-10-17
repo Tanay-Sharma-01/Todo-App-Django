@@ -10,6 +10,7 @@ router.register("show" , TodoViewSet , basename="create-todo")
 router.register("create" , CreateTodoViewSet , basename="create-todo")
 router.register("create-user-token" , CreateUserTokenViewSet , basename="create-user-token" )
 router.register("delete-todo" , DeleteTodoViewSet , basename="delete-todo")
+router.register("update-todo" , UpdateTodoViewSet , basename="update-todo");
 urlpatterns = router.urls
 # urlpatterns += [
 #     path("delete-todo/<int:pk>/" , delete_todo , name="delete-todo")

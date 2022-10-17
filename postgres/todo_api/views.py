@@ -1,4 +1,3 @@
-from re import L
 from colors.get_colors import color
 from django.shortcuts import render
 from rest_framework import viewsets
@@ -51,7 +50,7 @@ class TodoViewSet(viewsets.ModelViewSet):
 
 class CreateTodoViewSet(viewsets.ModelViewSet):
     
-    authentication_classes = [SessionAuthentication]
+    authentication_classes = [SessionAuthentication , TokenAuthentication]
     permission_classes = [IsAuthenticated]
     
     http_method_names = ["post"]
@@ -62,6 +61,7 @@ class CreateTodoViewSet(viewsets.ModelViewSet):
         
         post_data = request.data;
         post_data = post_data.dict()
+
         post_data["user"] = self.request.user.pk;
 
         serialized = TodoDataSerializer(data = post_data)
@@ -118,7 +118,6 @@ class DeleteTodoViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
     
         user = request.user;
-        print(color.CYAN , kwargs , kwargs["pk"] , request.user)
         if(not user.is_authenticated):
             return HttpResponse("Not Authenticated")
 
@@ -131,19 +130,44 @@ class DeleteTodoViewSet(viewsets.ModelViewSet):
         return HttpResponseRedirect("/")
     # Now i need to delete a particular todo.
 
+class UpdateTodoViewSet(viewsets.ModelViewSet):
 
-@api_view(["get"])
-def delete_todo(request , pk):
+    serializer_class = TodoDataSerializer
+    http_method_names = ["post"]
 
-    user = request.user;
-    if(not user.is_authenticated):  
-        return HttpResponse("Not Authenticated")
+    def create(self, request):
 
-    try:
-        todo = user.todo_set.get(pk = pk);
-    except:
+        data = request.data.dict();
+
+        todo = request.user.todo_set.get(pk = data["pk"])
+        data["user"] = todo.user.pk
+
+        serialized = TodoDataSerializer(data = data);
+
+        if(serialized.is_valid()):
+            todo.title = data["title"]
+            todo.description = data["description"]
+            todo.start_date = data["start_date"]
+            todo.end_date = data["end_date"]
+            todo.save();
+        
         return HttpResponseRedirect("/")
 
-    todo.delete();
-    return HttpResponseRedirect("/")
+        
+
+
+# @api_view(["get"])
+# def delete_todo(request , pk):
+
+#     user = request.user;
+#     if(not user.is_authenticated):  
+#         return HttpResponse("Not Authenticated")
+
+#     try:
+#         todo = user.todo_set.get(pk = pk);
+#     except:
+#         return HttpResponseRedirect("/")
+
+#     todo.delete();
+#     return HttpResponseRedirect("/")
 

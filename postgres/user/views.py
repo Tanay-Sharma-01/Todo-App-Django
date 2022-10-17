@@ -1,3 +1,4 @@
+from pydoc import describe
 from threading import activeCount
 from django.shortcuts import render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
@@ -10,6 +11,7 @@ from credentials import Data as DATA
 import requests
 from todo_api.models import Todo
 import requests
+import datetime
 import ast
 
 month = {
@@ -126,6 +128,8 @@ def create_user(request):
 
 
 def add_Todo(request):
+    if(not request.user.is_authenticated):
+        return HttpResponseRedirect("/")
     return render(request , "user/add-todo.html")
 
 def todo_auth(request):
@@ -143,3 +147,37 @@ def todo_auth(request):
     # print(new_todo)
 
     return HttpResponseRedirect("/")
+
+def updateTodo(request , pk):
+
+    user = request.user;
+    if(not user.is_authenticated):
+        return HttpResponseRedirect("/")
+    
+    try:
+        todo = user.todo_set.get(pk = pk)
+    except:
+        return HttpResponseRedirect("/")
+    else:
+
+        title = todo.title
+        description = todo.description
+        start_date = todo.start_date
+        end_date = todo.end_date
+
+
+
+    new_date1 = str(start_date)
+    new_date2 = str(end_date)
+    
+    # print(color.CYAN , new_date1 , new_date2)
+    # print(new_date4)
+
+    context = {
+        "title" : title,
+        "description" : description,
+        "start_date": new_date1,
+        "end_date": new_date2,
+        "pk": pk
+    }
+    return render(request , "user/update-todo.html" , context);
