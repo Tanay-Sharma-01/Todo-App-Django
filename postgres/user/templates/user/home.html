@@ -19,7 +19,7 @@
       <a href="/auth/logout/?next=/">Logout</a>
     </div>
     {% endif %} {% endblock %} {% block todo-display %} {% for x in data %}
-    {% with pk=x.pk %}
+    {% with pk=x.pk page=page %}
     <div class="display-card" style="position: relative">
       <div class="icons">
         <a href="update-todo/{{pk}}" name="{{pk}}"  class="fa-solid fa-pen-to-square"></a>
@@ -37,6 +37,14 @@
     {% endfor %} {% if isAuth %}
     <div class="Add-Todo-Button">
       <a href="/add-todo/">Add Todo</a>
+    </div>
+    <div>
+      {% if previous >= 0 %}
+      <a href="/{{previous}}">previous</a>
+      {% endif %}
+      {% if next %}
+      <a href="/{{next}}">next</a>
+      {% endif %}
     </div>
     {% endif %} {% endblock %}
   </body>

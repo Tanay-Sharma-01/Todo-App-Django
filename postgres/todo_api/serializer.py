@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 class TodoDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
-        fields = ["title" , "description" , "start_date" , "end_date" , "user"]
+        fields = ["title" , "description" , "start_date" , "end_date" , "user" , "pk"]
 
 class TokenSerializer(serializers.ModelSerializer):
     class Meta:

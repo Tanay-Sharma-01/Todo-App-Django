@@ -39,7 +39,7 @@ TRY THESE FIRST AFTER THAT NEXT WORK WILL BE DECIDED ...
 NOTES ---------------->
 Now let's say i am having models like Player and Family so as we can think by name that every Player is going to have a Family and vice-versa. So here One-to-one relationship is taking place so , we need to create a one-to-one relationship between player and family.
 
-# Now here are the key points to takeaway if you are writing OneToOne relationship then only a single family can be linked to a single PLayer and vice-versa.
+# Now here are the key points to takeaway if you are writing OneToOne relationship then only a single family can be linked to a single PLayer and vice-versa. And also in onetoone we simply access the relational table using the class name and properties can be accessed directly from their name.Because it is onetoone  which means there is no set , which get created in manytomany or manytoone(FOREIGN KEY).
 
 # If we are writing ForeignKey then this means that we are creating (((  ManyToOne  ))) relationship , which means that a Player can have multiple families but a family can only have a Player. ---> So here i found a trick which you can use to remember which model is going to be many and which is going to be one , The relation is referring to current Model Like ManyToOne i.e think it like there are many families and they are pointing to one Player .
           
@@ -183,6 +183,15 @@ def get_object():
     pass;
 
 
+Now i found something useful like when we are creating a serializer class then bydefault it is checking the data which we are providing accoring to the fiels and models which we have asssigned to the serializer class . But let's say we want some other functions which should also get checked when serializer is checking the data validation.
+
+To do this we simply need to create the function in the serializer class , and  should raise serializers.ValidationError("SOME ERROR MESSAGE") on failure. If we are adding this then django automatically checks this function in the particular serializer.
+ex--> 
+def validate(self, data):
+    if data['password1'] != data['password2']:
+        raise serializers.ValidationError(_("The two password fields didn't match."))
+    return data
+
 Also there is one more thing called as "filterset_fields" , which can be specified in the view , which will simply allow us to use those fields into the url , like if i am writing like :-
 filterset_fields = ["Name" , "id"] , then in this becomes a valid url -->
 http://anything/api/v1/AccessGranted?Name="Tanay"&id=1
@@ -195,4 +204,51 @@ Now i am thinking about creating a simple todo app , which is going to use all t
 NOW WHERE I AM LEAVING IS  , I AM STUCKED AT A POINT WHERE I NEED TO CREATE A USER USING API AND AFTER THAT USING THOSE CREDENTIALS I NEED TO GENRATE A TOKEN , AFTER THAT I NEED TO ADD THAT TOKEN TO THE TOKENS MODEL AND LINK THAT ROW TO THE PARTICULAR USER WE CREATED SO THAT USING USER WE CAN ACCESS THE TOKEN.
 
 SO PROBLEM WHICH I AM FACING IS THAT I AM TRYING TO CREATE A API WHICH WILL TAKE USENAME AND PASSWORD AS POST REQUEST AND AFTER THAT I WILL CALL AUTH-GETTOKEN API WHICH WILL GIVE ME THE TOKEN GENERATED AND THEN MY MAIN API WILL ADD THIS TOKEN TO THE CORRESSPONDING USER , AND ATLAST I WILL RETURN THE RESPONSE , BUT I AM NOT ABLE TO SEND USERNMA AND PASSWORD WHEN TRYING TO SEND IN THE SERIALIZER_CLASS TOKENSERIALIZER.
+
+-------------_> SOLVED --___|||||
+
+
+-----------> Pagination concept <----------------------------
+This is useful in listview like if we are listing the data and we want to limit the data like we want only 5 data to be visible on one page so i will simply set size of page to 5 and do pagination by following the below code ...
+
+
+
+
+queryset = self.filter_queryset(self.get_queryset())
+page = self.paginate_queryset(queryset)
+if page is not None:
+    serialized = TodoDataSerializer(page, many=True, context=self.get_serializer_context())  
+    return self.get_paginated_response(serialized.data);
+
+serialized = TodoDataSerializer(self.get_queryset , many=True)
+return Response(serialized.data)
+
+
+
+
+-> Here we need to set our get_queryset() to the desired task , which is going to be used as self.get_queryset() , after that we need to tell the serializer class these are very common design as see below example -->
+    we can set the data which we want to be used or displayed by our views or viewset using queryset property , also if we need to modify it then we can use get_queryset() method , similarly we can specify our view or viewset to use which serializer , using serializer_class property , but if we need to provide class according to some conditions then we can simply use get_serializer_context() method which will return the serializer class.
+
+Now if we need to change the pagination size of a particular view then we can simply create a classs , let's say MyPagination and inherit pagination.PageNumberPagination like in below example an change the value of page size accordingly
+
+
+
+class MyPagination(pagination.PageNumberPagination):
+    page_size = 1000
+    page_size_query_param = 'page_size'
+    max_page_size = 10000
+
+
+
+
+
+and to use this class simply change the pagination_class property in the desired view in which you are working like
+
+class MyViewSet(viewsets.ModelViewset):
+    pagination_class = MyPagination
+
+Now Here comes the template part , let's say i want to create two buttons next and previous , and on clicking on next the next page data should load , and vice versa for previous button.
+To do this we need to pass next and previous values in the template and we can simply create two anchor tag and in them we can redirect them to the desired value.
+
+
 

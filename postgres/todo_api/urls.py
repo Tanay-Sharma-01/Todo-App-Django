@@ -6,7 +6,7 @@ from .views import *
 
 router = DefaultRouter()
 
-router.register("show" , TodoViewSet , basename="create-todo")
+router.register("show" , TodoViewSet , basename="show-todo")
 router.register("create" , CreateTodoViewSet , basename="create-todo")
 router.register("create-user-token" , CreateUserTokenViewSet , basename="create-user-token" )
 router.register("delete-todo" , DeleteTodoViewSet , basename="delete-todo")

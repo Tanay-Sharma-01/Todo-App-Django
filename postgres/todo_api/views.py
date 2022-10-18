@@ -1,3 +1,4 @@
+from multiprocessing import context
 from colors.get_colors import color
 from django.shortcuts import render
 from rest_framework import viewsets
@@ -21,32 +22,44 @@ class TodoViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     authentication_classes = [SessionAuthentication , 
     TokenAuthentication]
-
     http_method_names = ["get"]
     serializer_class = TodoDataSerializer
 
+    def get_queryset(self):
+        return self.request.user.todo_set.all()
+
+
     def list(self , request):
 
-        print(color.CYAN , self.queryset)
+        # print(color.CYAN , self.queryset)
+        # user = request.user
+        # get_data = user.todo_set.all()
 
-        user = request.user
-        get_data = user.todo_set.all()
+        # new_data = []
 
-        new_data = []
-        # print(color.RED , get_data.values())
-        for x in get_data:
-            obj = {
-                "pk": x.pk,
-                "title": x.title,
-                "description": x.description,
-                "start_date" : x.start_date,
-                "end_date": x.end_date
-            }
-            new_data.append(obj)            
-        # print(color.GREEN , new_data)
+        # for x in get_data:
+        #     obj = {
+        #         "pk": x.pk,
+        #         "title": x.title,
+        #         "description": x.description,
+        #         "start_date" : x.start_date,
+        #         "end_date": x.end_date
+        #     }
+        #     new_data.append(obj) 
+        
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
 
-        return Response(new_data)
-    
+        if page is not None:
+
+            serialized = TodoDataSerializer(page , many=True)
+            # print(color.GREEN , serialized.data)
+        
+            return self.get_paginated_response(serialized.data)
+        
+        serialized = TodoDataSerializer(self.get_queryset , many=True)
+        return Response(serialized.data)
+
 
 class CreateTodoViewSet(viewsets.ModelViewSet):
     
